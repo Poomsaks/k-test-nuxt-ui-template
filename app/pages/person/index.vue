@@ -31,7 +31,7 @@ function getRowItems(row: Row<User>) {
       label: 'Copy customer ID',
       icon: 'i-lucide-copy',
       onSelect() {
-        navigator.clipboard.writeText(row.original.id.toString())
+        navigator.clipboard.writeText(row.original._id.toString())
         toast.add({
           title: 'Copied to clipboard',
           description: 'Customer ID copied to clipboard'
@@ -43,11 +43,20 @@ function getRowItems(row: Row<User>) {
     },
     {
       label: 'View customer details',
-      icon: 'i-lucide-list'
+      icon: 'i-lucide-list',
+      onSelect() {
+        console.log('row.original', row.original)
+
+        localStorage.setItem('customer', row.original._id.toString())
+        router.push(`/person/edit`)
+      }
     },
     {
       label: 'View customer payments',
-      icon: 'i-lucide-wallet'
+      icon: 'i-lucide-wallet',
+      onSelect() {
+        router.push(`/customers/${row.original._id}/payments`)
+      }
     },
     {
       type: 'separator'
