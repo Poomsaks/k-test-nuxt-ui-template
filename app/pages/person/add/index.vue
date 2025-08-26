@@ -27,7 +27,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   console.log('event.data.long', event.data.long)
 
   try {
-    await $fetch('https://20181eb1c8b3.ngrok-free.app/api/person', {
+    await $fetch('http://localhost:3002/api/person', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
