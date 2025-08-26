@@ -42,7 +42,7 @@ function getRowItems(row: Row<User>) {
       type: 'separator'
     },
     {
-      label: 'View customer details',
+      label: 'Edit',
       icon: 'i-lucide-list',
       onSelect() {
         console.log('row.original', row.original)
@@ -52,10 +52,13 @@ function getRowItems(row: Row<User>) {
       }
     },
     {
-      label: 'View customer payments',
+      label: 'View customer',
       icon: 'i-lucide-wallet',
       onSelect() {
-        router.push(`/customers/${row.original._id}/payments`)
+        console.log('row.original', row.original)
+
+        localStorage.setItem('customer', row.original._id.toString())
+        router.push(`/person/view`)
       }
     },
     {
