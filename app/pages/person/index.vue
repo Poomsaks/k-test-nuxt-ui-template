@@ -45,8 +45,6 @@ function getRowItems(row: Row<User>) {
       label: 'Edit',
       icon: 'i-lucide-list',
       onSelect() {
-        console.log('row.original', row.original)
-
         localStorage.setItem('customer', row.original._id.toString())
         router.push(`/person/edit`)
       }
@@ -55,8 +53,6 @@ function getRowItems(row: Row<User>) {
       label: 'View customer',
       icon: 'i-lucide-wallet',
       onSelect() {
-        console.log('row.original', row.original)
-
         localStorage.setItem('customer', row.original._id.toString())
         router.push(`/person/view`)
       }
@@ -69,6 +65,9 @@ function getRowItems(row: Row<User>) {
       icon: 'i-lucide-trash',
       color: 'error',
       onSelect() {
+        console.log('row.original', row.original._id.toString())
+        localStorage.setItem('customer', row.original._id.toString())
+        router.push(`/person/delete`)
         toast.add({
           title: 'Customer deleted',
           description: 'The customer has been deleted.'
@@ -93,11 +92,15 @@ const columns: TableColumn<User>[] = [
   },
   {
     accessorKey: 'lat',
-    header: 'LAT'
+    header: 'LAT',
+    cell: ({ row }) =>
+      h('div', { class: 'bg-yellow-100 text-center px-2 py-1 rounded' }, row.original.lat)
   },
   {
     accessorKey: 'long',
-    header: 'LONG'
+    header: 'LONG',
+    cell: ({ row }) =>
+      h('div', { class: 'bg-green-100 text-center px-2 py-1 rounded' }, row.original.long)
   },
   {
     id: 'actions',
@@ -125,6 +128,7 @@ const columns: TableColumn<User>[] = [
     }
   }
 ]
+
 
 const statusFilter = ref('all')
 
@@ -156,22 +160,6 @@ function goToAddPerson() {
     <template #body>
       <div class="flex flex-wrap items-center justify-between gap-1.5">
         <div class="flex flex-wrap items-center gap-1.5">
-          <CustomersDeleteModal :count="table?.tableApi?.getFilteredSelectedRowModel().rows.length">
-            <UButton
-              v-if="table?.tableApi?.getFilteredSelectedRowModel().rows.length"
-              label="Delete"
-              color="error"
-              variant="subtle"
-              icon="i-lucide-trash"
-            >
-              <template #trailing>
-                <UKbd>
-                  {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length }}
-                </UKbd>
-              </template>
-            </UButton>
-          </CustomersDeleteModal>
-
           <USelect
             v-model="statusFilter"
             :items="[
