@@ -2,36 +2,33 @@
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
+// ✅ สร้าง schema ตรวจสอบ input
 const schema = z.object({
   name: z.string().optional(),
   id_card: z.string().optional(),
   lat: z.string().optional(),
-  long: z.string().optional() // ไม่ Required
+  long: z.string().optional()
 })
-const open = ref(false)
 
 type Schema = z.output<typeof schema>
 
+// ✅ state สำหรับผูกกับ input
 const state = reactive<Partial<Schema>>({
-  name: undefined,
-  id_card: undefined,
-  lat: undefined,
-  long: undefined
+  name: '',
+  id_card: '',
+  lat: '',
+  long: ''
 })
 
+const open = ref(false)
 const toast = useToast()
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  console.log('event.data.name', event.data.name)
-  console.log('event.data.id_card', event.data.id_card)
-  console.log('event.data.lat', event.data.lat)
-  console.log('event.data.long', event.data.long)
 
+// ✅ ฟังก์ชัน submit
+async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
     await $fetch('http://localhost:3002/api/person', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: {
         name: event.data.name,
         id_card: event.data.id_card,
@@ -42,7 +39,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     toast.add({
       title: 'Success',
-      description: `New customer ${event.data.name} added`,
+      description: `เพิ่มลูกค้าใหม่: ${event.data.name}`,
       color: 'success'
     })
     open.value = false
@@ -58,37 +55,47 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 
 <template>
-  <UForm
-    :schema="schema"
-    :state="state"
-    class="space-y-4"
-    @submit="onSubmit"
-  >
-    <UFormField label="Name" placeholder="John Doe" name="name">
-      <UInput v-model="state.name" class="w-full" />
-    </UFormField>
-    <UFormField label="id_card" placeholder="id Card" name="id_card">
-      <UInput v-model="state.id_card" class="w-full" />
-    </UFormField>
-    <UFormField label="lat" placeholder="Lat" name="lat">
-      <UInput v-model="state.lat" class="w-full" />
-    </UFormField>
-    <UFormField label="long" placeholder="Long" name="long">
-      <UInput v-model="state.long" class="w-full" />
-    </UFormField>
-    <div class="flex justify-end gap-2">
-      <UButton
-        label="Cancel"
-        color="neutral"
-        variant="subtle"
-        @click="open = false"
-      />
-      <UButton
-        label="Create"
-        color="primary"
-        variant="solid"
-        type="submit"
-      />
-    </div>
-  </UForm>
+  <!-- ✅ Card Layout ของ Nuxt UI -->
+  <UCard class="max-w-md mx-auto">
+    <template #header>
+      <h2 class="text-lg font-semibold">เพิ่มลูกค้าใหม่</h2>
+    </template>
+
+    <UForm
+      :schema="schema"
+      :state="state"
+      class="space-y-4"
+      @submit="onSubmit"
+    >
+      <UFormGroup label="ชื่อ" name="name">
+        <UInput v-model="state.name" placeholder="John Doe" />
+      </UFormGroup>
+
+      <UFormGroup label="เลขบัตรประชาชน" name="id_card">
+        <UInput v-model="state.id_card" placeholder="เลขบัตรประชาชน" />
+      </UFormGroup>
+
+      <UFormGroup label="Latitude" name="lat">
+        <UInput v-model="state.lat" placeholder="เช่น 13.7563" />
+      </UFormGroup>
+
+      <UFormGroup label="Longitude" name="long">
+        <UInput v-model="state.long" placeholder="เช่น 100.5018" />
+      </UFormGroup>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <UButton
+          label="ยกเลิก"
+          color="neutral"
+          variant="subtle"
+          @click="open = false"
+        />
+        <UButton
+          label="บันทึก"
+          color="primary"
+          type="submit"
+        />
+      </div>
+    </UForm>
+  </UCard>
 </template>

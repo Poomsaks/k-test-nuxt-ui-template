@@ -68,10 +68,6 @@ function getRowItems(row: Row<User>) {
         console.log('row.original', row.original._id.toString())
         localStorage.setItem('customer', row.original._id.toString())
         router.push(`/person/delete`)
-        toast.add({
-          title: 'Customer deleted',
-          description: 'The customer has been deleted.'
-        })
       }
     }
   ]

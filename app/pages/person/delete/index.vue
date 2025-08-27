@@ -5,6 +5,8 @@ const id = localStorage.getItem('customer') // ดึง id จาก localStora
 const loading = ref(false)
 const person = ref<any>(null)
 
+const toast = useToast()
+
 onMounted(async () => {
   if (!id) return
   try {
@@ -39,6 +41,10 @@ const deletePerson = async () => {
     console.log('✅ ลบสำเร็จ:', data)
     alert('ลบข้อมูลสำเร็จ')
     localStorage.removeItem('customer')
+    toast.add({
+      title: 'Customer deleted',
+      description: 'The customer has been deleted.'
+    })
   } catch (err) {
     console.error('❌ ลบไม่สำเร็จ:', err)
     alert('เกิดข้อผิดพลาดในการลบ')
@@ -50,7 +56,9 @@ const deletePerson = async () => {
 
 <template>
   <div class="max-w-lg mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-    <h2 class="text-xl font-bold text-red-600 mb-4">ลบข้อมูลลูกค้า</h2>
+    <h2 class="text-xl font-bold text-red-600 mb-4">
+      ลบข้อมูลลูกค้า
+    </h2>
 
     <div v-if="person" class="space-y-2 mb-6">
       <p><span class="font-semibold">ID:</span> {{ person._id }}</p>
