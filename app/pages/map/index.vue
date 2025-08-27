@@ -1,43 +1,57 @@
 <script setup lang="ts">
-import { onMounted, ref, nextTick } from 'vue'
+import { onMounted, ref, nextTick, onUnmounted } from 'vue'
 import L from 'leaflet'
-import 'leaflet/dist/leaflet.css' // ✅ ต้อง import css ด้วย
+import 'leaflet/dist/leaflet.css'
 
 const persons = ref<any[]>([])
 const mapElement = ref<HTMLDivElement | null>(null)
-let map: L.Map | null = null
 
+let map: L.Map | null = null
+let markers: L.Marker[] = []
+
+// โหลดข้อมูล
 const fetchPersons = async () => {
   try {
     const res = await fetch('http://localhost:3002/api/person')
-    persons.value = await res.json()
-    await nextTick() // ✅ รอ DOM พร้อม
-    initMap()
+    const data = await res.json()
+    persons.value = data
+    await nextTick()
+    updateMap()
   } catch (err) {
     console.error('❌ fetch error:', err)
+    await nextTick()
+    updateMap()
   }
 }
 
-const initMap = () => {
+// สร้าง/อัปเดตแผนที่
+const updateMap = () => {
   if (!mapElement.value) return
 
-  // ถ้ามี map เดิมแล้วลบก่อน (ป้องกันซ้ำ)
-  if (map) {
-    map.remove()
+  // init map แค่ครั้งเดียว
+  if (!map) {
+    map = L.map(mapElement.value).setView([13.7563, 100.5018], 12)
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map)
   }
 
-  // สร้างแผนที่
-  map = L.map(mapElement.value).setView([13.7563, 100.5018], 6)
+  // ลบ marker เดิม
+  markers.forEach(m => m.remove())
+  markers = []
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map)
-
-  // สร้าง marker ตามข้อมูล
-  persons.value.forEach((p) => {
-    if (p.lat && p.long) {
-      const marker = L.marker([p.lat, p.long]).addTo(map)
-      marker.bindPopup(`<b>${p.name}</b><br>ID: ${p.id_card}`)
+  // เพิ่ม marker ใหม่
+  persons.value.forEach((person) => {
+    if (person.lat && person.long) {
+      const marker = L.marker([Number(person.lat), Number(person.long)]).addTo(map!)
+      marker.bindPopup(`
+        <div style="min-width:200px">
+          <h3>${person.name}</h3>
+          <p>ID: ${person.id_card}</p>
+        </div>
+      `)
+      markers.push(marker)
     }
   })
 }
@@ -45,11 +59,28 @@ const initMap = () => {
 onMounted(() => {
   fetchPersons()
 })
+
+onUnmounted(() => {
+  if (map) {
+    map.remove()
+    map = null
+  }
+})
 </script>
 
 <template>
-  <div style="width:100%; height:100%;">
-    <p>Page Map (Leaflet)</p>
-    <div ref="mapElement" style="width:100%; height:100%;" />
+  <div style="width: 100vw; height: 100vh; position: relative">
+    <div ref="mapElement" style="width: 100%; height: 100%" />
   </div>
 </template>
+
+<style>
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+</style>

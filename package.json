@@ -19,11 +19,13 @@
     "@unovis/vue": "^1.5.2",
     "@vueuse/nuxt": "^13.5.0",
     "date-fns": "^4.1.0",
+    "hls.js": "^1.6.11",
     "nuxt": "^4.0.3",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.5.2",
+    "@types/node-fetch": "^2.6.13",
     "eslint": "^9.31.0",
     "typescript": "^5.8.3",
     "vue-tsc": "^3.0.1"
