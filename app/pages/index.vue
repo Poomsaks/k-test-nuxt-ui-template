@@ -20,8 +20,8 @@ const providers = [
 
 function onSubmit() {
   console.log('Submitted')
-  // navigateTo('/map')
-  $keycloak.login()
+  navigateTo('/map')
+  // $keycloak.login()
 }
 </script>
 
