@@ -33,6 +33,14 @@ const links = [[{
   }
 },
 {
+  label: 'User',
+  icon: 'i-lucide-users',
+  to: '/user',
+  onSelect: () => {
+    open.value = false
+  }
+},
+{
   label: 'Person',
   icon: 'i-lucide-users',
   to: '/person',
